@@ -1,21 +1,14 @@
-
-
-
-chrome.runtime.onInstalled.addListener(() => {
-    // chrome.storage.sync.set({ color });
-    console.log('initialsed');
-  });
-
-
 var target_page = "https://www.codechef.com/*";
 
 function check(details)
 {
-    console.log(details.url)
+    console.log(details)
     var url_string = details.url;
     var index = url_string.indexOf("solution_id=");
     if(index != -1)
     {
+      var csrf_token = details.requestHeaders[2].value
+      console.log(csrf_token)
       var id = url_string.substr(index+12);
       var key = id;
       var value = id;

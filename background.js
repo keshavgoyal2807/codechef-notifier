@@ -1,19 +1,70 @@
 var target_page = "https://www.codechef.com/*";
 
 
-function sendmessage1(id,csrf_token)
+// pinging codechef server.
+
+function checkResult(id,csrf_token,url)
 {
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, {greeting: "hello"}, function(response) {
-      console.log(response);
-    });
-  });
+    $.ajax({
+      url:url,
+      dataType:"json",
+      headers:{
+          "x-csrf-token":csrf_token
+      },
+      success:function(data,status,xhr)
+      {
+        console.log(data)
+        console.log(status)
+        console.log(xhr)
+        if(data.result_code==="wait")
+        {
+          checkResult(id,csrf_token,url);
+        }
+        else
+        {
+            
+        }
+      },
+      error:function(xhr,type_of_error,exception)
+      {
+          console.log(xhr)
+          console.log(type_of_error)
+      }
+    })
+
 }
 
 
 
 
 
+
+
+
+
+
+// sending message to content scirpt and getting info related to problem.
+function sendmessage1(id,csrf_token,url)
+{
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, {greeting: "hello"}, function(response) {
+      console.log(response);
+      var store={};
+      store[id]=response;
+      chrome.storage.sync.remove(id,function(){
+        console.log("successfully_removed");
+      })
+      chrome.storage.sync.set(store,function(){
+        console.log(store)
+        checkResult(id,csrf_token,url)
+        // setInterval(checkResult,1000,id,csrf_token,url)
+      })
+    });
+  });
+}
+
+
+// listener function for webreqeuest.
 function check(details)
 {
     console.log(details)
@@ -32,12 +83,13 @@ function check(details)
         if(Object.keys(key_values).length!=0)
         {
             console.log(key_values[id])
+            // checkResult(id,csrf_token,url_string)
         }
         else{
           chrome.storage.sync.set(store, function() {
             console.log('Value is set to ' + value);
           });
-          sendmessage1(id,csrf_token);
+          sendmessage1(id,csrf_token,url_string);
         }
       })
     }

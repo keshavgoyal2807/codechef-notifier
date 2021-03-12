@@ -3,7 +3,7 @@ var target_page = "https://www.codechef.com/*";
 
 // pinging codechef server.
 
-function checkResult(id,csrf_token,url)
+function checkResult(id,csrf_token,url,problem_details)
 {
     $.ajax({
       url:url,
@@ -18,18 +18,22 @@ function checkResult(id,csrf_token,url)
         console.log(xhr)
         if(data.result_code==="wait")
         {
-          checkResult(id,csrf_token,url);
+          checkResult(id,csrf_token,url,problem_details);
         }
         else
         {
             notification_id = `Verdict for Problem id:${id}`
             notification_msg = `The Verdict for the problem submission with id :${id} is ${data.result_code}`
-            chrome.notifications.create(notification_id,{
-              type:"basic",
-              iconUrl:"index.jpeg",
-              title:notification_id,
-              message:notification_msg
-            },
+            console.log(problem_details)
+
+            var notification_details={
+              type:"list",
+              title:`Problem Code : ${problem_details.id}`,
+              message:`Verdict: - ${data.result_code}`,
+              items:[{title:'Time',message:`${data.time}`}],
+              iconUrl:'icon2.jpg'
+            }
+            chrome.notifications.create(notification_id,notification_details,
             function(details){
                 console.log(details)
             }
@@ -67,7 +71,7 @@ function sendmessage1(id,csrf_token,url)
       })
       chrome.storage.sync.set(store,function(){
         console.log(store)
-        checkResult(id,csrf_token,url)
+        checkResult(id,csrf_token,url,store[id])
         // setInterval(checkResult,1000,id,csrf_token,url)
       })
     });

@@ -22,7 +22,18 @@ function checkResult(id,csrf_token,url)
         }
         else
         {
-            
+            notification_id = `Verdict for Problem id:${id}`
+            notification_msg = `The Verdict for the problem submission with id :${id} is ${data.result_code}`
+            chrome.notifications.create(notification_id,{
+              type:"basic",
+              iconUrl:"index.jpeg",
+              title:notification_id,
+              message:notification_msg
+            },
+            function(details){
+                console.log(details)
+            }
+            )
         }
       },
       error:function(xhr,type_of_error,exception)

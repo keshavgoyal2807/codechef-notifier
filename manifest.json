@@ -19,6 +19,7 @@
         "webRequestBlocking",
         "tabs",
         "activeTab",
+        "notifications",
         "*://*/*"
     ]
   }
